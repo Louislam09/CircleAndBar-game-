@@ -4,11 +4,12 @@
  * -------------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
+alert('VER LAS INSTRUCCIONES PRIMERO');
 var canvas;
 var c;
-let movimiento = 60;
+let movimiento = 100;
 let score = 0;
-let aumento = 0;
+let speedUp = 0;
 let intentos = 0;
 let estadoDelJuego = 'HOME';
 
@@ -20,11 +21,14 @@ let finalScore;
 // ? MENUS
 let homeMenu;
 let gameOverMenu;
+let instructionMenu;
 
 // ? BUTTONS
 let startButton;
 let restartButton;
 let goHomeButton;
+let introButton;
+let backButton;
 
 // ? Audio
 let backgroundAudio;
@@ -78,6 +82,9 @@ function iniciadorDelJuego(estadoDelJuego) {
 	gameOverMenu = document.getElementById('gameOver');
 	centerMenuPosition(gameOverMenu);
 
+	instructionMenu = document.getElementById('instructionMenu');
+	centerMenuPosition(instructionMenu);
+
 	// ** BUTTOM GO HOME
 	goHomeButton = document.getElementById('goHomeButton');
 	goHomeButton.addEventListener('click', goHome);
@@ -92,6 +99,14 @@ function iniciadorDelJuego(estadoDelJuego) {
 	// ** BUTTON START
 	startButton = document.getElementById('startButton');
 	startButton.addEventListener('click', gameStart);
+
+	// ** BUTTON introButton
+	introButton = document.getElementById('introButton');
+	introButton.addEventListener('click', instruction);
+
+	// ** BUTTON backButton
+	backButton = document.getElementById('backButton');
+	backButton.addEventListener('click', goBack);
 
 	//** SCORE FINAL
 	finalScore = document.getElementById('finalScore');
@@ -167,7 +182,7 @@ class Circulo {
 			screenreboundAudio.play();
 		}
 		if (this.y + this.radius - barra.h > canvas.height) {
-			barra.color = 'red';
+			barra.color = 'black';
 			screenreboundAudio.play();
 		}
 		/*
@@ -182,23 +197,18 @@ class Circulo {
 			circulo.y - circulo.radius < barra.y + barra.h
 		) {
 			// circulo.dx = -circulo.dx;
-			circulo.dy = -5 + aumento;
+			circulo.dy = -5 + speedUp;
 			score += 1;
 
 			reboundAudio.play();
-
-			// if (barra.w / 4 >= circulo.x - circulo.radius) {
-			// 	// circulo.dx = -5;
-			// 	console.log('choque con la equina');
-			// }
 
 			/*
  *-------------------------------------------------------------------------------------------------------------------------------------------------------
  ?							 ESTA CONDICION PERMITE AUMENTAR LA VELOCIDAD DEL CIRCULO CADA VEZ QUE SCORE SEA UN DIVISOR DE 10.                           |     
  * -------------------------------------------------------------------------------------------------------------------------------------------------------
  */
-			if (score % 10 == 0 && score != 0) {
-				aumento += -2;
+			if (score % 5 == 0 && score != 0) {
+				speedUp += -0.5;
 			}
 		}
 
@@ -246,7 +256,7 @@ class Barra {
  */
 
 let circulo = new Circulo(300, 300, 5, 5, 50, 'blue');
-let barra = new Barra(300, 620, 200, 20, 'red');
+let barra = new Barra(300, 620, 200, 20, 'black');
 
 // ? COLISION DEL CIRCULO CON EL barraANGULO
 // function colision(circulo, barra) {
@@ -281,6 +291,13 @@ let barra = new Barra(300, 620, 200, 20, 'red');
  ?							                  				    FUNCION PARA INICIAR EL JUEGO                                                         |     
  * ------------------------------------------------------------------------------------------------------------------------------------------------------
  */
+function instruction() {
+	setState('INSTRUCTIONS');
+}
+
+function goBack() {
+	setState('HOME');
+}
 
 function gameStart() {
 	iniciadorDelJuego('PLAY');
@@ -297,15 +314,14 @@ function gameStart() {
  */
 
 function goHome() {
-	setState('HOME');
-	circulo.y = barra.y - barra.h * 3;
-	circulo.x = barra.x + barra.w / 2;
-
-	gameoverAudio.pause();
-	gameoverAudio.currentTime = 0;
-	console.log('Funciono');
-	// animate();
-
+	// setState('HOME');
+	// score = 0;
+	// speedUp = 0;
+	// circulo.y = 300;
+	// circulo.x = barra.x + barra.w / 2;
+	// gameoverAudio.pause();
+	// gameoverAudio.currentTime = 0;
+	window.location.reload();
 }
 
 /*
@@ -315,14 +331,18 @@ function goHome() {
  */
 
 function gameRestart() {
+	setState('PLAY');
+
 	circulo.update();
-	barra.x = canvas.width / 2 - 100;
+	barra.updateBarra();
+
+	// barra.x = canvas.width / 2;
 	circulo.y = barra.y - barra.h * 3;
 	circulo.x = barra.x + barra.w / 2;
 	barra.updateBarra();
 	score = 0;
-	aumento = 0;
-	setState('PLAY');
+	speedUp = 0;
+
 	backgroundAudio.pause();
 	backgroundAudio.currentTime = 0;
 	gameoverAudio.pause();
@@ -358,7 +378,7 @@ function moverBarra(evento) {
  ?							       ESTA CONDICION LIMITA LA BARRA A NO PASAR LOS BORDERS DEL CANVAS.						                            |     
  * ------------------------------------------------------------------------------------------------------------------------------------------------------
  */
-				if (barra.x + barra.w <= canvas.width) {
+				if (barra.x + barra.w < canvas.width) {
 					barra.x = barra.x + movimiento;
 				}
 				break;
@@ -381,7 +401,7 @@ function moverBarra(evento) {
  ?							       ESTA CONDICION LIMITA LA BARRA A NO PASAR LOS BORDERS DEL CANVAS.						                            |     
  * ------------------------------------------------------------------------------------------------------------------------------------------------------
  */
-				if (barra.x + barra.w <= canvas.width) {
+				if (barra.x + barra.w < canvas.width) {
 					barra.x = barra.x + movimiento;
 				}
 				break;
@@ -456,6 +476,13 @@ function showMenu(estado) {
 	if (estado == 'HOME') {
 		displayMenu(homeMenu);
 		closeMenu(gameOverMenu);
+		closeMenu(instructionMenu);
+
+		backgroundAudio.play();
+	}
+	if (estado == 'INSTRUCTIONS') {
+		displayMenu(instructionMenu);
+		closeMenu(homeMenu);
 
 		backgroundAudio.play();
 	}

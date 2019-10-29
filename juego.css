@@ -9,6 +9,7 @@ body {
 
 #gameOver,
 #playWUD,
+#instructionMenu,
 #homeMenu {
 	position: absolute;
 	visibility: hidden;
@@ -26,20 +27,33 @@ h3 {
 	margin-bottom: 0;
 	margin-top: 0;
 }
+
+section span {
+	color: black;
+	background-color: lightgray;
+}
+
+#instruction {
+	font-family: monospace;
+}
 /* span {
 	color: red;
 } */
 
 #restartButton,
 #startButton,
-#goHomeButton {
+#introButton,
+#goHomeButton,
+#backButton {
 	border: 2px solid black;
 	border-radius: 10px;
 }
 
 #restartButton:hover,
 #startButton:hover,
-#goHomeButton:hover {
+#introButton:hover,
+#goHomeButton:hover,
+#backButton:hover {
 	background-color: lightseagreen;
 	color: rgba(22, 19, 19, 0.993);
 	border-color: lightgray;
